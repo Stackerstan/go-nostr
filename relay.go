@@ -6,7 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"log"
+	//"log"
 	"time"
 
 	s "github.com/SaveTheRbtz/generic-sync-map-go"

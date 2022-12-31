@@ -134,16 +134,21 @@ func (r *Relay) ConnectContext(ctx context.Context) error {
 					var event Event
 					json.Unmarshal(jsonMessage[2], &event)
 
-					// check signature of all received events, ignore invalid
-					ok, err := event.CheckSignature()
-					if !ok {
-						errmsg := ""
-						if err != nil {
-							errmsg = err.Error()
-						}
-						log.Printf("bad signature: %s", errmsg)
+					//we are dropping valid sigs, allow invalid and figure this out later
+					if _, err := event.CheckSignature(); err != nil {
+						//fmt.Printf("\nfailed sig\n%s\n", jsonMessage[2])
 						continue
 					}
+					// check signature of all received events, ignore invalid
+// 					ok, err := event.CheckSignature()
+// 					if !ok {
+// 						errmsg := ""
+// 						if err != nil {
+// 							errmsg = err.Error()
+// 						}
+// 						log.Printf("bad signature: %s", errmsg)
+// 						continue
+// 					}
 
 					// check if the event matches the desired filter, ignore otherwise
 					if !subscription.Filters.Match(&event) {

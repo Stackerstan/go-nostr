@@ -183,7 +183,7 @@ func (r *Relay) ConnectContext(ctx context.Context) error {
 
 				if statusChan, exist := r.statusChans.Load(eventId); exist {
 					if ok {
-						statusChan <- PublishStatusSucceeded
+						//statusChan <- PublishStatusSucceeded
 					} else {
 						statusChan <- PublishStatusFailed
 					}

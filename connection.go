@@ -1,8 +1,9 @@
 package nostr
 
 import (
-	"github.com/gorilla/websocket"
 	"sync"
+
+	"github.com/gorilla/websocket"
 )
 
 type Connection struct {
@@ -19,15 +20,42 @@ func NewConnection(socket *websocket.Conn) *Connection {
 func (c *Connection) WriteJSON(v interface{}) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.socket.WriteJSON(v)
+	err := c.socket.WriteJSON(v)
+	if err != nil {
+		err2 := c.Close()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+	return nil
 }
 
 func (c *Connection) WriteMessage(messageType int, data []byte) error {
 	c.mutex.Lock()
 	defer c.mutex.Unlock()
-	return c.socket.WriteMessage(messageType, data)
+	err := c.socket.WriteMessage(messageType, data)
+	if err != nil {
+		err2 := c.Close()
+		if err2 != nil {
+			return err2
+		}
+		return err
+	}
+	return nil
 }
 
 func (c *Connection) Close() error {
-	return c.socket.Close()
+	err := c.socket.Close()
+	if err != nil {
+		err := c.socket.Close()
+		if err != nil {
+			err := c.socket.UnderlyingConn().Close()
+			if err != nil {
+				return err
+			}
+		}
+		return err
+	}
+	return nil
 }

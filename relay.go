@@ -140,15 +140,15 @@ func (r *Relay) ConnectContext(ctx context.Context) error {
 						continue
 					}
 					// check signature of all received events, ignore invalid
-// 					ok, err := event.CheckSignature()
-// 					if !ok {
-// 						errmsg := ""
-// 						if err != nil {
-// 							errmsg = err.Error()
-// 						}
-// 						log.Printf("bad signature: %s", errmsg)
-// 						continue
-// 					}
+					// 					ok, err := event.CheckSignature()
+					// 					if !ok {
+					// 						errmsg := ""
+					// 						if err != nil {
+					// 							errmsg = err.Error()
+					// 						}
+					// 						log.Printf("bad signature: %s", errmsg)
+					// 						continue
+					// 					}
 
 					// check if the event matches the desired filter, ignore otherwise
 					if !subscription.Filters.Match(&event) {
@@ -234,6 +234,12 @@ func (r *Relay) Publish(event Event) chan Status {
 	}()
 
 	return statusChan
+}
+
+func (r *Relay) MustPublish(event Event) {
+	go func() {
+		r.Connection.WriteJSON([]interface{}{"EVENT", event})
+	}()
 }
 
 func (r *Relay) Subscribe(filters Filters) *Subscription {

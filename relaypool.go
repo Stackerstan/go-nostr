@@ -215,12 +215,13 @@ func (r *RelayPool) PublishEvent(evt *Event) (*Event, chan PublishStatus, error)
 		if r, ok := r.Policies.Load(url); !ok || !r.ShouldWrite(evt) {
 			return true
 		}
+		relay.MustPublish(*evt)
 
-		go func(relay *Relay) {
-			for resultStatus := range relay.Publish(*evt) {
-				status <- PublishStatus{relay.URL, resultStatus}
-			}
-		}(relay)
+		//go func(relay *Relay) {
+		//	for resultStatus := range relay.Publish(*evt) {
+		//		status <- PublishStatus{relay.URL, resultStatus}
+		//	}
+		//}(relay)
 
 		return true
 	})
